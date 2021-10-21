@@ -1,3 +1,86 @@
 <div class="mt-5">
+
     <h1>Empresa</h1>
+
+    <div class="card">
+        <div class="card-body">
+            
+
+            <form>
+
+                <div class="row">
+                    <div class="col-md mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Nome</label>
+                        <input type="text" class="form-control" name="empNome">
+                        <div class="form-text">Nome ou Razão Social</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md mb-3">
+                            <label for="exampleInputPassword1" class="form-label">E-mail</label>
+                            <input type="text" class="form-control" name="empEmail">
+                    </div>
+                    <div class="col-md mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Telefone</label>
+                        <input type="text" class="form-control empPhone" name="empTelefone">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md mb-3">
+                            <label for="exampleInputPassword1" class="form-label">Website</label>
+                            <input type="text" class="form-control" name="empSite">
+                    </div>
+                    <div class="col-md mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Instagram</label>
+                        <input type="text" class="form-control" name="empInsta">
+                    </div>
+                    <div class="col-md mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Facebook</label>
+                        <input type="text" class="form-control" name="empFacebook">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn btn-outline-danger"><i class="fas fa-trash"></i> Apagar Dados</button>
+                
+                        <button type="button" class="btn btn-primary float-end" onclick="saveEmpresa()"><i class="fas fa-check-circle"></i> Salvar</button>
+                    </div>
+                </div>
+                
+            </form>
+
+        </div>
+    </div>
+
 </div>
+
+<script>
+    var SPMaskBehavior = function (val) {
+        return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+    },
+    spOptions = {
+        onKeyPress: function (val, e, field, options) {
+            field.mask(SPMaskBehavior.apply({}, arguments), options);
+        }
+    };
+
+    $('.empPhone').mask(SPMaskBehavior, spOptions);
+
+    executeQuery('select * from empresa', (s) => {
+        if (s.rows.length > 0){
+            let emp = s.rows[0]
+
+            document.querySelector("form").empNome.value = emp.nome
+            document.querySelector("form").empEmail.value = emp.email
+            document.querySelector("form").empTelefone.value = emp.telefone
+            document.querySelector("form").empSite.value = emp.website
+            document.querySelector("form").empInsta.value = emp.instagram
+            document.querySelector("form").empFacebook.value = emp.facebook
+
+        }
+    })
+
+</script>
