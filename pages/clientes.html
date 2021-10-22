@@ -1,3 +1,54 @@
 <div class="mt-5">
-    <h1>Clientes</h1>
+    
+    <div class="row mb-3">
+        <div class="col">
+            <h1 class="float-start">Clientes</h1>
+            <a href="#" class="btn btn-outline-primary float-end mt-2" data-page="clienteForm" data-current="clientes"><i class="fas fa-plus"></i> Adicionar cliente</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+            <div class="row">
+                <div class="col">
+                    <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nome</th>
+                            <th scope="col">Endereço</th>
+                            <th scope="col" width="10%"></th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
 </div>
+
+<script>
+
+    executeQuery(`select * from produtos order by prodid desc`, (e) => {
+            console.log(e)
+            p = e
+
+            for(let i = 0; i < e.rows.length; i++){
+
+                let rowI = row
+
+                rowI = rowI.replaceAll('{{id}}', e.rows[i].prodid)
+                rowI = rowI.replaceAll('{{nome}}', e.rows[i].nome)
+                rowI = rowI.replaceAll('{{valor}}', new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(e.rows[i].valor))
+                rowI = rowI.replaceAll('{{unidade}}', e.rows[i].unidade)
+
+                document.querySelector("tbody").innerHTML = document.querySelector("tbody").innerHTML + rowI
+            }
+
+        })   
+</script>

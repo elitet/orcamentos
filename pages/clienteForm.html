@@ -3,7 +3,7 @@
     <div class="row mb-3">
         <div class="col">
             <h1>
-                <a href="#" class="text-body" data-current="produtos" data-page="produtos"><i class="fas fa-arrow-left"></i></a> Produtos
+                <a href="#" class="text-body" data-current="clientes" data-page="clientes"><i class="fas fa-arrow-left"></i></a> Clientes
             </h1>
         </div>
     </div>
@@ -65,7 +65,7 @@
 
 
     if(pageParam != undefined) {
-        executeQuery(`select * from produtos where prodid = ${pageParam}`, (e) => {
+        executeQuery(`select * from clientes where id = ${pageParam}`, (e) => {
 
                 if (e.rows.length > 0){
                     let prod = e.rows[0]

@@ -3,7 +3,7 @@
     <div class="row mb-3">
         <div class="col">
             <h1 class="float-start">Produtos</h1>
-            <a href="#" class="btn btn-outline-primary float-end mt-2" aria-label="produtoForm" aria-current="produtos"><i class="fas fa-plus"></i> Adicionar produto</a>
+            <a href="#" class="btn btn-outline-primary float-end mt-2" data-page="produtoForm" data-current="produtos"><i class="fas fa-plus"></i> Adicionar produto</a>
         </div>
     </div>
 
@@ -35,20 +35,7 @@
 
 <script>
 
-    let row = `<tr>
-                    <th scope="row">{{id}}</th>
-                    <td>{{nome}}</td>
-                    <td>{{valor}}</td>
-                    <td>{{unidade}}</td>
-                    <td class="text-center">
-                            <button type="button" class="btn btn-outline-primary btn-circle"><i class="fas fa-edit"></i></button>
-                            <button type="button" class="btn btn btn-outline-danger btn-circle"><i class="fas fa-trash"></i></button>
-                    </td>
-               </tr>`
-
-    let p = ""
-
-    executeQuery(`select * from produtos order by id desc`, (e) => {
+    executeQuery(`select * from produtos order by prodid desc`, (e) => {
             console.log(e)
             p = e
 
@@ -56,7 +43,7 @@
 
                 let rowI = row
 
-                rowI = rowI.replaceAll('{{id}}', e.rows[i].id)
+                rowI = rowI.replaceAll('{{id}}', e.rows[i].prodid)
                 rowI = rowI.replaceAll('{{nome}}', e.rows[i].nome)
                 rowI = rowI.replaceAll('{{valor}}', new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(e.rows[i].valor))
                 rowI = rowI.replaceAll('{{unidade}}', e.rows[i].unidade)

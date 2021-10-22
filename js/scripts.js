@@ -6,13 +6,15 @@
 // This file is intentionally blank
 // Use this file to add JavaScript to your project
 
+let pageParam = ""
+
 $(document).ready(function () {
 
     createDatabase();
 
     var getParentAnchor = function (element) {
         while (element !== null) {
-            if (element.ariaLabel && element.tagName.toUpperCase() === "A") {
+            if (element.dataset && element.tagName.toUpperCase() === "A") {
                 return element;
             }
             element = element.parentNode;
@@ -22,20 +24,25 @@ $(document).ready(function () {
 
     document.querySelector("body").addEventListener('click', function (e) {
         //e.preventDefault();
-        var anchor = getParentAnchor(e.target);
+        let anchor = getParentAnchor(e.target);
 
         if (anchor !== null) {
             const existingElements = document.querySelectorAll(".lMenu");
             const elmSel = Array.from(existingElements).filter(chapter => {
-                                if(chapter.classList.contains("active") && anchor.ariaCurrent != chapter.ariaLabel)
+                                if(chapter.classList.contains("active") && anchor.dataset.current != chapter.dataset.page)
                                     return chapter
                             })
 
-            if(elmSel.length > 0)
+            if (elmSel.length > 0)
                 elmSel[0].classList.remove("active")
 
+            if (anchor.dataset.param != undefined || anchor.dataset.param != null)
+                param = anchor.dataset.param
+            
+            pageParam = anchor.dataset.param
+            
             anchor.classList.add("active");
-            pages(anchor.ariaLabel)
+            pages(anchor.dataset.page)
         }
     }, false);
 
@@ -54,9 +61,23 @@ const Toast = Swal.mixin({
   })
 
 let pages = (page) => {
-    $('#main').load('/pages/' + page + '.html');
+
+    if (page != 'produtoForm')
+        pageParam = ""
+
+    $('#main').load(`/pages/${page}.html`);
 }
 
+let row = `<tr>
+                    <th scope="row">{{id}}</th>
+                    <td>{{nome}}</td>
+                    <td>{{valor}}</td>
+                    <td>{{unidade}}</td>
+                    <td class="text-center">
+                            <a href="#" class="btn btn-outline-primary btn-circle" data-page="produtoForm" data-current="produtos" data-param="{{id}}"><i class="fas fa-edit"></i></a>
+                            <button type="button" class="btn btn btn-outline-danger btn-circle" onclick="deleteProduto({{id}})"><i class="fas fa-trash"></i></button>
+                    </td>
+               </tr>`
 
 function createDatabase() {
     try {
@@ -143,10 +164,25 @@ function createTable() {
 
     executeQuery(`SELECT name FROM sqlite_master WHERE type='table' AND name='produtos'`, (s) => {
         if (s.rows.length == 0){
-            var sqlC = `CREATE TABLE produtos (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+            var sqlC = `CREATE TABLE produtos (prodid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
                                                             nome TEXT NOT NULL,
                                                             valor DOUBLE(10,2) NOT NULL,
                                                             unidade TEXT NOT NULL
+                        )`;
+            executeQuery(sqlC);
+        }
+    })
+
+    executeQuery(`SELECT name FROM sqlite_master WHERE type='table' AND name='clientes'`, (s) => {
+        if (s.rows.length == 0){
+            var sqlC = `CREATE TABLE clientes (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+                                                            nome TEXT NOT NULL,
+                                                            cep TEXT NOT NULL,
+                                                            endereco TEXT NOT NULL,
+                                                            cidade TEXT NOT NULL,
+                                                            estado TEXT NOT NULL,
+                                                            telefone TEXT NOT NULL,
+                                                            observacao TEXT NOT NULL
                         )`;
             executeQuery(sqlC);
         }
@@ -202,7 +238,7 @@ let saveEmpresa = () => {
                     title: 'Dados foram salvos com sucesso!'
                 })
 
-                document.querySelector("[aria-label='empresa']").click()
+                document.querySelector("[data-page='empresa']").click()
 
             })
         })
@@ -239,7 +275,7 @@ let deleteEmpresa = () => {
                     'success'
                 )
                 
-                document.querySelector("[aria-label='empresa']").click()
+                document.querySelector("[data-page='empresa']").click()
             })
 
         }
@@ -259,7 +295,7 @@ let saveProduto = (prodId) => {
 
         
         if (prodId != null)
-            sql = `UPDATE produtos SET nome = '${emp.prodNome}', valor = ${valorN}, unidade = '${emp.prodUnid}' WHERE id = ${prodId}`
+            sql = `UPDATE produtos SET nome = '${emp.prodNome}', valor = ${valorN}, unidade = '${emp.prodUnid}' WHERE prodid = ${prodId}`
         else
             sql = `INSERT INTO produtos (nome, valor, unidade) VALUES ('${emp.prodNome}', ${valorN}, '${emp.prodUnid}')`
         
@@ -271,7 +307,7 @@ let saveProduto = (prodId) => {
                 title: 'Dados foram salvos com sucesso!'
             })
 
-            document.querySelector("a[aria-current=produtos]").click()
+            document.querySelector("a[data-page=produtos]").click()
 
         })    
 
@@ -282,4 +318,33 @@ let saveProduto = (prodId) => {
             'warning'
         )
     }
+}
+
+let deleteProduto = (id) => {
+
+    Swal.fire({
+        title: 'Você deseja apagar os dados?',
+        text: "Isto é uma ação irreversível!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sim, apagar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+
+            executeQuery(`delete from produtos where prodid = ${id}`, (e) => {
+                
+                Swal.fire(
+                    'Apagado!',
+                    'Os dados foram deletados com sucesso.',
+                    'success'
+                )
+                
+                document.querySelector("[data-page='produtos']").click()
+            })
+
+        }
+      })
+
 }
