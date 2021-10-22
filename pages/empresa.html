@@ -1,29 +1,36 @@
 <div class="mt-5">
 
-    <h1>Empresa</h1>
+    <div class="row mb-3">
+        <div class="col">
+            <h1>Empresa</h1>
+        </div>
+    </div>
 
     <div class="card">
         <div class="card-body">
             
-
+            <!-- <div class="rounded-circle" style="width: 80px;">
+                <img src="../assets/noImage.svg">
+            </div> -->
+            
             <form>
 
                 <div class="row">
                     <div class="col-md mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Nome</label>
-                        <input type="text" class="form-control" name="empNome">
+                        <label for="exampleInputEmail1" class="form-label">Nome*</label>
+                        <input type="text" class="form-control" name="empNome" required>
                         <div class="form-text">Nome ou Razão Social</div>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md mb-3">
-                            <label for="exampleInputPassword1" class="form-label">E-mail</label>
-                            <input type="text" class="form-control" name="empEmail">
+                            <label for="exampleInputPassword1" class="form-label">E-mail*</label>
+                            <input type="text" class="form-control" name="empEmail" required>
                     </div>
                     <div class="col-md mb-3">
-                        <label for="exampleInputPassword1" class="form-label">Telefone</label>
-                        <input type="text" class="form-control empPhone" name="empTelefone">
+                        <label for="exampleInputPassword1" class="form-label">Telefone*</label>
+                        <input type="text" class="form-control empPhone" name="empTelefone" required>
                     </div>
                 </div>
 
@@ -44,7 +51,7 @@
 
                 <div class="row">
                     <div class="col">
-                        <button type="button" class="btn btn-outline-danger"><i class="fas fa-trash"></i> Apagar Dados</button>
+                        <button id="deleteBtn" type="button" class="btn btn-outline-danger" onclick="deleteEmpresa()"><i class="fas fa-trash"></i> Apagar Dados</button>
                 
                         <button type="button" class="btn btn-primary float-end" onclick="saveEmpresa()"><i class="fas fa-check-circle"></i> Salvar</button>
                     </div>
@@ -80,7 +87,8 @@
             document.querySelector("form").empInsta.value = emp.instagram
             document.querySelector("form").empFacebook.value = emp.facebook
 
-        }
+        }else
+            document.getElementById("deleteBtn").disabled = true
     })
 
 </script>

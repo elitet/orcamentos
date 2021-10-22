@@ -1,0 +1,64 @@
+<div class="mt-5">
+    
+    <div class="row mb-3">
+        <div class="col">
+            <h1>
+                <a href="#" class="text-body" aria-current="produtos" aria-label="produtos"><i class="fas fa-arrow-left"></i></a> Produtos
+            </h1>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form>
+
+                <div class="row">
+                    <div class="col-md mb-3">
+                        <label class="form-label">Produto*</label>
+                        <input type="text" class="form-control" name="prodNome" required>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md mb-3">
+                        <label class="form-label">Valor*</label>
+                        <input type="text" class="form-control maskValor" name="prodValor" required>
+                    </div>
+                    <div class="col-md mb-3">
+                        <label class="form-label">Unidade*</label>
+                        <select class="form-select" name="prodUnid" required>
+                            <option value="mts">Metros</option>
+                            <option value="m²">Metros Quadrados</option>
+                            <option value="m³">Metro Cúbico</option>
+                            <option value="cm">Centímetros</option>
+                            <option value="dz">Dúzias</option>
+                            <option value="kg">Quilo</option>
+                            <option value="gm">Grama</option>
+                            <option value="km">Quilômetros</option>
+                            <option value="unid">Unidades</option>
+                            <option value="lts">Litros</option>
+                            <option value="min">Minutos</option>
+                            <option value="h">Horas</option>
+                            <option value="dias">Dias</option>
+                            <option value="meses">Meses</option>
+                            <option value="anos">Anos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <button id="deleteBtn" type="button" class="btn btn-outline-danger"><i class="fas fa-trash"></i> Apagar Dados</button>
+                
+                        <button type="button" class="btn btn-primary float-end" onclick="saveProduto()"><i class="fas fa-check-circle"></i> Salvar</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.maskValor').mask("#.##0,00", {reverse: true});
+</script>

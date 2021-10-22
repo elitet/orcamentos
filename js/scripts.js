@@ -25,17 +25,33 @@ $(document).ready(function () {
         var anchor = getParentAnchor(e.target);
 
         if (anchor !== null) {
-
             const existingElements = document.querySelectorAll(".lMenu");
-            const elmSel = Array.from(existingElements).filter(chapter => chapter.classList.contains("active"))
+            const elmSel = Array.from(existingElements).filter(chapter => {
+                                if(chapter.classList.contains("active") && anchor.ariaCurrent != chapter.ariaLabel)
+                                    return chapter
+                            })
 
-            elmSel[0].classList.remove("active")
+            if(elmSel.length > 0)
+                elmSel[0].classList.remove("active")
+
             anchor.classList.add("active");
             pages(anchor.ariaLabel)
         }
     }, false);
 
 });
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+  })
 
 let pages = (page) => {
     $('#main').load('/pages/' + page + '.html');
@@ -83,7 +99,15 @@ function executeQuery($query, callback) {
                                 eval(callback + "(result)");
                             }
                         }
-                    }, function (tx, error) {});
+                    }, function (tx, error) {
+                        console.log(error)
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Algo deu errado, tente novamente mais tarde.',
+                            //footer: '<a href="">Porque estou vendo isso?</a>'
+                          })
+                    });
                 });
             //return rslt;
         }
@@ -99,18 +123,34 @@ function showTable() {
 }
 
 function createTable() {
-    //var sql = 'drop table empresa';
+    //var sql = 'drop table produtos';
     //executeQuery(sql);
-    var sqlC = `CREATE TABLE empresa (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
-                                                     nome TEXT NOT NULL,
-                                                     email TEXT NOT NULL,
-                                                     telefone TEXT NOT NULL,
-                                                     website TEXT NOT NULL,
-                                                     instagram TEXT NOT NULL,
-                                                     facebook TEXT NOT NULL,
-                                                     image BLOB
-                )`;
-    executeQuery(sqlC);
+
+    executeQuery(`SELECT name FROM sqlite_master WHERE type='table' AND name='empresa'`, (s) => {
+        if (s.rows.length == 0){
+            var sqlC = `CREATE TABLE empresa (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+                                                            nome TEXT NOT NULL,
+                                                            email TEXT NOT NULL,
+                                                            telefone TEXT NOT NULL,
+                                                            website TEXT NOT NULL,
+                                                            instagram TEXT NOT NULL,
+                                                            facebook TEXT NOT NULL,
+                                                            image BLOB
+                        )`;
+            executeQuery(sqlC);
+        }
+    })
+
+    executeQuery(`SELECT name FROM sqlite_master WHERE type='table' AND name='produtos'`, (s) => {
+        if (s.rows.length == 0){
+            var sqlC = `CREATE TABLE produtos (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
+                                                            nome TEXT NOT NULL,
+                                                            valor DOUBLE(10,2) NOT NULL,
+                                                            unidade TEXT NOT NULL
+                        )`;
+            executeQuery(sqlC);
+        }
+    })
 }
 
 function insertValue() {
@@ -136,16 +176,110 @@ function insertValue() {
 
 }
 
+let emptyFields = () => Array.from(document.querySelectorAll("[required]")).filter(s => {
+                                        if(s.value.trim().length == 0)
+                                            return s
+                                    }).length                              
+
 let saveEmpresa = () => {
-    let emp = $("form").serializeJSON()
+    if(emptyFields() == 0){
 
-    let sql = ""
+        let emp = $("form").serializeJSON()
 
-    executeQuery('select * from empresa', (s) => {
-        if (s.rows.length > 0)
-            sql = `UPDATE empresa SET nome = '${emp.empNome}', email = '${emp.empEmail}', telefone = '${emp.empTelefone}', website = '${emp.empSite}', instagram = '${emp.empInsta}', facebook = '${emp.empFacebook}' WHERE id = ${s.rows[0].id}`
+        let sql = ""
+
+        executeQuery('select * from empresa', (s) => {
+            if (s.rows.length > 0)
+                sql = `UPDATE empresa SET nome = '${emp.empNome}', email = '${emp.empEmail}', telefone = '${emp.empTelefone}', website = '${emp.empSite}', instagram = '${emp.empInsta}', facebook = '${emp.empFacebook}' WHERE id = ${s.rows[0].id}`
+            else
+                sql = `INSERT INTO empresa (nome, email, telefone, website, instagram, facebook) VALUES ('${emp.empNome}', '${emp.empEmail}', '${emp.empTelefone}', '${emp.empSite}', '${emp.empInsta}', '${emp.empFacebook}')`
+            
+            executeQuery(sql, (e) => {
+                console.log(e)
+
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Dados foram salvos com sucesso!'
+                })
+
+                document.querySelector("[aria-label='empresa']").click()
+
+            })
+        })
+
+    }else{
+        Swal.fire(
+            'Atenção!',
+            'Voçê deve preencher os campos obrigatórios!',
+            'warning'
+        )
+    }
+}
+
+
+let deleteEmpresa = () => {
+
+    Swal.fire({
+        title: 'Você deseja apagar os dados?',
+        text: "Isto é uma ação irreversível!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sim, apagar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+
+            executeQuery('delete from empresa', (e) => {
+                document.querySelector("form").reset()
+                
+                Swal.fire(
+                    'Apagado!',
+                    'Os dados foram deletados com sucesso.',
+                    'success'
+                )
+                
+                document.querySelector("[aria-label='empresa']").click()
+            })
+
+        }
+      })
+
+}
+
+
+let saveProduto = (prodId) => {
+    if(emptyFields() == 0){
+
+        let emp = $("form").serializeJSON()
+
+        let valorN = Number(emp.prodValor.replaceAll('.', '').replaceAll(',', '.'))
+
+        let sql = ""
+
+        
+        if (prodId != null)
+            sql = `UPDATE produtos SET nome = '${emp.prodNome}', valor = ${valorN}, unidade = '${emp.prodUnid}' WHERE id = ${prodId}`
         else
-            sql = `INSERT INTO empresa (nome, email, telefone, website, instagram, facebook) VALUES ('${emp.empNome}', '${emp.empEmail}', '${emp.empTelefone}', '${emp.empSite}', '${emp.empInsta}', '${emp.empFacebook}')`
-        executeQuery(sql)
-    })
+            sql = `INSERT INTO produtos (nome, valor, unidade) VALUES ('${emp.prodNome}', ${valorN}, '${emp.prodUnid}')`
+        
+        executeQuery(sql, (e) => {
+            console.log(e)
+
+            Toast.fire({
+                icon: 'success',
+                title: 'Dados foram salvos com sucesso!'
+            })
+
+            document.querySelector("a[aria-current=produtos]").click()
+
+        })    
+
+    }else{
+        Swal.fire(
+            'Atenção!',
+            'Voçê deve preencher os campos obrigatórios!',
+            'warning'
+        )
+    }
 }

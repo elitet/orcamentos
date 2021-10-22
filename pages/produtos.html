@@ -1,3 +1,68 @@
 <div class="mt-5">
-    <h1>Produtos</h1>
+    
+    <div class="row mb-3">
+        <div class="col">
+            <h1 class="float-start">Produtos</h1>
+            <a href="#" class="btn btn-outline-primary float-end mt-2" aria-label="produtoForm" aria-current="produtos"><i class="fas fa-plus"></i> Adicionar produto</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+            <div class="row">
+                <div class="col">
+                    <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Produto</th>
+                            <th scope="col">Valor</th>
+                            <th scope="col">Unidade</th>
+                            <th scope="col" width="10%"></th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
 </div>
+
+<script>
+
+    let row = `<tr>
+                    <th scope="row">{{id}}</th>
+                    <td>{{nome}}</td>
+                    <td>{{valor}}</td>
+                    <td>{{unidade}}</td>
+                    <td class="text-center">
+                            <button type="button" class="btn btn-outline-primary btn-circle"><i class="fas fa-edit"></i></button>
+                            <button type="button" class="btn btn btn-outline-danger btn-circle"><i class="fas fa-trash"></i></button>
+                    </td>
+               </tr>`
+
+    let p = ""
+
+    executeQuery(`select * from produtos order by id desc`, (e) => {
+            console.log(e)
+            p = e
+
+            for(let i = 0; i < e.rows.length; i++){
+
+                let rowI = row
+
+                rowI = rowI.replaceAll('{{id}}', e.rows[i].id)
+                rowI = rowI.replaceAll('{{nome}}', e.rows[i].nome)
+                rowI = rowI.replaceAll('{{valor}}', new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(e.rows[i].valor))
+                rowI = rowI.replaceAll('{{unidade}}', e.rows[i].unidade)
+
+                document.querySelector("tbody").innerHTML = document.querySelector("tbody").innerHTML + rowI
+            }
+
+        })   
+</script>
