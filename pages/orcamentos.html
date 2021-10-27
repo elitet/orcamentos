@@ -1,3 +1,248 @@
 <div class="mt-5">
-    <h1>Orçamentos</h1>
+
+    <div class="row mb-3">
+        <div class="col">
+            <h1 class="float-start">Orçamentos</h1>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col">
+
+            <h4 class="mt-4"><i class="fas fa-building"></i> Dados do Emissor</h4>
+
+            <div class="card mb-2">
+                <div class="card-body">
+                    <h5 class="card-title empNome">Card title</h5>
+                    <h6 class="card-subtitle mb-2 text-muted empDados">matheus_marquest@outlook.com - (18) 98156-3399
+                    </h6>
+                </div>
+            </div>
+
+            <h4 class="mt-4"><i class="fas fa-user"></i> Dados do Cliente</h4>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <label class="form-label">Selecione um cliente</label>
+                    <select class="form-select mb-3 selectCliente" name="selectCliente"></select>
+
+                    <h5 class="card-title cliNome"></h5>
+                    <h6 class="card-subtitle mb-2 text-muted cliDados0"></h6>
+                    <h6 class="card-subtitle mb-2 text-muted cliDados1"></h6>
+                </div>
+            </div>
+
+            <h4 class="mt-4"><i class="fas fa-file-invoice-dollar"></i> Dados Orçamento</h4>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Número</label>
+                            <input type="text" class="form-control">
+                        </div>
+
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md mb-3">
+                            <label class="form-label">Data</label>
+                            <input type="text" class="form-control datePick" name="dateOrc" placeholder="DD/MM/AAAA">
+                        </div>
+
+                        <div class="col-md mb-3">
+                            <label class="form-label">Validade</label>
+                            <input type="text" class="form-control datePick" name="dateValidade"
+                                placeholder="DD/MM/AAAA">
+                        </div>
+
+                        <div class="col-md mb-3">
+                            <label class="form-label">Garantia</label>
+                            <input type="text" class="form-control datePick" name="dateGarantia"
+                                placeholder="DD/MM/AAAA">
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md mt-3 mb-3">
+                            <h5 class="mb-3"><i class="fas fa-dollar-sign"></i> Pagamento</h5>
+
+                            <div class="row">
+                                <div class="col">
+                                    <input type="radio" class="btn-check" name="OrcPag" id="orcPagDinheiro">
+                                    <label class="btn btn-outline-success w-100" for="orcPagDinheiro"><i class="fas fa-money-bill-wave"></i> Dinheiro</label>
+                                </div>
+                                <div class="col">
+                                    <input type="radio" class="btn-check" name="OrcPag" id="orcPagCC">
+                                    <label class="btn btn-outline-dark w-100" for="orcPagCC"><i class="fas fa-credit-card"></i> Crédito</label>
+                                </div>
+                                <div class="col">
+                                    <input type="radio" class="btn-check" name="OrcPag" id="orcPagBoleto">
+                                    <label class="btn btn-outline-secondary w-100" for="orcPagBoleto"><i class="fa-solid fa-file-invoice-dollar"></i> Boleto</label>
+                                </div>
+                                <div class="col">
+                                    <input type="radio" class="btn-check" name="OrcPag" id="orcPagPIX">
+                                    <label class="btn btn-outline-info w-100" for="orcPagPIX"><i class="fa-brands fa-pix"></i> PIX</label>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+
+            <h4 class="mt-4"><i class="fas fa-box-open"></i> Produtos</h4>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row mb-4">
+                        <div class="col">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                <input type="text" class="form-control" id="searchProdutos" placeholder="Procurar...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="produtosOrc"></div>
+                     
+                </div>
+                    
+            </div>
+        </div>
+
+            <div class="row">
+                <div class="col">
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="fs-3">Total</span>
+                        <span class="fs-3 fw-bolder" id="totalOrcametno">R$ 0,00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-5 mb-5">
+                <div class="col">
+                    <button type="button" class="btn btn-primary btn-lg w-100"><i class="fa-solid fa-file-pdf"></i> Emitir Orçamento</button>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
 </div>
+
+<script>
+    $('.datePick').datepicker({
+        language: 'pt-BR'
+    });
+
+    $('[name="dateOrc"]').val(formatDate(new Date()))
+    $('[name="dateValidade"]').val(formatDate(new Date(new Date().setDate(new Date().getDate() + 5))))
+
+
+
+    executeQuery(`select * from empresa where id = 1`, (e) => {
+
+        if (e.rows.length > 0) {
+            let emp = e.rows[0]
+
+            document.getElementsByClassName("empNome")[0].innerHTML = emp.nome
+            document.getElementsByClassName("empDados")[0].innerHTML = `${emp.email} - ${emp.telefone}`
+
+        }
+
+    })
+
+    document.getElementsByClassName("selectCliente")[0].innerHTML = `<option selected>Selecione...</option>`
+
+    executeQuery(`select * from clientes`, (e) => {
+
+        if (e.rows.length > 0) {
+
+            for (let i = 0; i < e.rows.length; i++) {
+                let cli = e.rows[i]
+                let option = optionCliente
+
+                option = option.replaceAll("{{id}}", cli.id)
+                    .replaceAll("{{nome}}", cli.nome)
+                    .replaceAll("{{telefone}}", cli.telefone)
+
+                document.getElementsByClassName("selectCliente")[0].innerHTML = document.getElementsByClassName(
+                    "selectCliente")[0].innerHTML + option
+
+
+            }
+
+        }
+
+    })
+
+    document.querySelector("[name=selectCliente]").addEventListener('change', (e) => {
+        if (e.target.value > 0) {
+
+            executeQuery(`select * from clientes where id = ${e.target.value}`, (e) => {
+
+                if (e.rows.length > 0) {
+                    let cli = e.rows[0]
+                    document.getElementsByClassName("cliNome")[0].innerHTML = cli.nome
+                    document.getElementsByClassName("cliDados0")[0].innerHTML =
+                        `${cli.telefone} - ${cli.email}`
+                    document.getElementsByClassName("cliDados1")[0].innerHTML =
+                        `${cli.endereco}, ${cli.numero}, ${cli.bairro}, ${cli.cep} - ${cli.cidade}/${cli.estado}`
+                }
+
+            })
+
+        } else {
+            document.getElementsByClassName("cliNome")[0].innerHTML = ""
+            document.getElementsByClassName("cliDados0")[0].innerHTML = ""
+            document.getElementsByClassName("cliDados1")[0].innerHTML = ""
+        }
+    })
+
+
+    executeQuery(`select nome label, prodid value, valor, unidade from produtos`, (e) => {
+
+        if (e.rows.length > 0) {
+
+            orcamentosProdutos = Array.from(e.rows)
+
+            console.log(orcamentosProdutos)
+
+            new Autocomplete(document.getElementById('searchProdutos'), {
+                data: orcamentosProdutos,
+                onSelectItem: ({label, value, valor, unidade}) => {
+                    console.log("user selected:", label, value);
+
+                    let prodSel = orcamentosProdutos.filter(e => e.value == value)[0]
+
+                    let row = rowOrcamentoProd
+
+                    row = row.replaceAll("{{id}}", prodSel.value)
+                            .replaceAll("{{descricao}}", prodSel.label)
+                            .replaceAll("{{valor}}", accounting.formatMoney(prodSel.valor, "R$ "))
+
+                    document.getElementById("produtosOrc").innerHTML = document.getElementById("produtosOrc").innerHTML + row
+
+                    calcTotalProd(prodSel.value)
+                    
+                    document.getElementById('searchProdutos').value = ""
+
+                }
+            })
+
+        }
+
+    })
+
+</script>

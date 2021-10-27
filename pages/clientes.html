@@ -17,6 +17,7 @@
                           <tr>
                             <th scope="col">#</th>
                             <th scope="col">Nome</th>
+                            <th scope="col">Telefone</th>
                             <th scope="col">Endereço</th>
                             <th scope="col" width="10%"></th>
                           </tr>
@@ -34,18 +35,16 @@
 
 <script>
 
-    executeQuery(`select * from produtos order by prodid desc`, (e) => {
-            console.log(e)
-            p = e
-
+    executeQuery(`select * from clientes order by id desc`, (e) => {
+            
             for(let i = 0; i < e.rows.length; i++){
 
-                let rowI = row
+                let rowI = rowCliente
 
-                rowI = rowI.replaceAll('{{id}}', e.rows[i].prodid)
+                rowI = rowI.replaceAll('{{id}}', e.rows[i].id)
                 rowI = rowI.replaceAll('{{nome}}', e.rows[i].nome)
-                rowI = rowI.replaceAll('{{valor}}', new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(e.rows[i].valor))
-                rowI = rowI.replaceAll('{{unidade}}', e.rows[i].unidade)
+                rowI = rowI.replaceAll('{{telefone}}', e.rows[i].telefone)
+                rowI = rowI.replaceAll('{{endereco}}', e.rows[i].endereco)
 
                 document.querySelector("tbody").innerHTML = document.querySelector("tbody").innerHTML + rowI
             }

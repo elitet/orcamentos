@@ -64,7 +64,7 @@
     $('.maskValor').mask("#.##0,00", {reverse: true});
 
 
-    if(pageParam != undefined) {
+    if(pageParam.length > 0) {
         executeQuery(`select * from produtos where prodid = ${pageParam}`, (e) => {
 
                 if (e.rows.length > 0){

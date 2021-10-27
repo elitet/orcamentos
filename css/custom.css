@@ -1,5 +1,9 @@
+body {
+    background-color: #fbfbfb;
+}
+
 .swal2-container {
-    padding: 4em 0.625em .625em .625em !important;
+    padding: 2em 0.625em .625em .625em !important;
 }
 
 .btn-circle {

@@ -14,43 +14,75 @@
 
                 <div class="row">
                     <div class="col-md mb-3">
-                        <label class="form-label">Produto*</label>
-                        <input type="text" class="form-control" name="prodNome" required>
+                        <label class="form-label">Nome*</label>
+                        <input type="text" class="form-control" name="cliNome" required>
                     </div>
                 </div>
-                
+
                 <div class="row">
                     <div class="col-md mb-3">
-                        <label class="form-label">Valor*</label>
-                        <input type="text" class="form-control maskValor" name="prodValor" required>
+                        <label class="form-label">E-mail</label>
+                        <input type="text" class="form-control" name="cliEmail">
                     </div>
                     <div class="col-md mb-3">
-                        <label class="form-label">Unidade*</label>
-                        <select class="form-select" name="prodUnid" required>
-                            <option value="mts">Metros</option>
-                            <option value="m²">Metros Quadrados</option>
-                            <option value="m³">Metro Cúbico</option>
-                            <option value="cm">Centímetros</option>
-                            <option value="dz">Dúzias</option>
-                            <option value="kg">Quilo</option>
-                            <option value="gm">Grama</option>
-                            <option value="km">Quilômetros</option>
-                            <option value="unid">Unidades</option>
-                            <option value="lts">Litros</option>
-                            <option value="min">Minutos</option>
-                            <option value="h">Horas</option>
-                            <option value="dias">Dias</option>
-                            <option value="meses">Meses</option>
-                            <option value="anos">Anos</option>
-                        </select>
+                        <label class="form-label">Celular*</label>
+                        <input type="text" class="form-control maskCelular" name="cliCelular" required>
                     </div>
                 </div>
+
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">CEP*</label>
+                        <input type="text" class="form-control maskCep" maxlength="9" name="cliCep" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md mb-3">
+                        <label class="form-label">Endereço*</label>
+                        <input type="text" class="form-control disabled" name="cliEnd" required readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md mb-3">
+                        <label class="form-label">Bairro*</label>
+                        <input type="text" class="form-control" name="cliBairro" required readonly>
+                    </div>
+                    <div class="col-md mb-3">
+                        <label class="form-label">Número*</label>
+                        <input type="text" class="form-control" name="cliNumero" required>
+                    </div>
+                    <div class="col-md mb-3">
+                        <label class="form-label">Complemento</label>
+                        <input type="text" class="form-control" name="cliComp">
+                    </div>
+                </div>
+                <div class="row">               
+                    <div class="col-md mb-3">
+                        <label class="form-label">Cidade*</label>
+                        <input type="text" class="form-control" name="cliCidade" required readonly>
+                    </div>
+                    <div class="col-md mb-3">
+                        <label class="form-label">Estado*</label>
+                        <input type="text" class="form-control" name="cliEstado" required readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md mb-3">
+                        <label class="form-label">Observação</label>
+                        <textarea class="form-control" rows="3" name="cliObs"></textarea>
+                    </div>
+                </div>
+
 
                 <div class="row">
                     <div class="col">
                         <!-- <button id="deleteBtn" type="button" class="btn btn-outline-danger"><i class="fas fa-trash"></i> Apagar Dados</button> -->
                 
-                        <button type="button" class="btn btn-primary float-end" onclick="saveProduto(pageParam != undefined ? pageParam : null)"><i class="fas fa-check-circle"></i> Salvar</button>
+                        <button type="button" class="btn btn-primary float-end" onclick="saveCliente(pageParam.length > 0 ? pageParam : null)"><i class="fas fa-check-circle"></i> Salvar</button>
                     </div>
                 </div>
 
@@ -61,21 +93,59 @@
 
 <script>
 
-    $('.maskValor').mask("#.##0,00", {reverse: true});
+    $('.maskCep').mask("99999-999");
+    $('.maskCelular').mask(SPMaskBehavior, spOptions);
 
+    if(pageParam.length > 0) {
 
-    if(pageParam != undefined) {
+        console.log("aqui " + pageParam.length)
+
         executeQuery(`select * from clientes where id = ${pageParam}`, (e) => {
 
-                if (e.rows.length > 0){
-                    let prod = e.rows[0]
+            console.log("aqui")
 
-                    document.querySelector("form").prodNome.value = prod.nome
-                    document.querySelector("form").prodValor.value = $('.maskValor').masked(prod.valor)
-                    document.querySelector("form").prodUnid.value = prod.unidade
+                if (e.rows.length > 0){
+                    let cli = e.rows[0]
+
+                    document.querySelector("form").cliNome.value    = cli.nome
+                    document.querySelector("form").cliEmail.value   = cli.email
+                    document.querySelector("form").cliCelular.value = cli.telefone
+                    document.querySelector("form").cliEnd.value     = cli.endereco
+                    document.querySelector("form").cliBairro.value  = cli.bairro
+                    document.querySelector("form").cliNumero.value  = cli.numero
+                    document.querySelector("form").cliComp.value    = cli.complemento
+                    document.querySelector("form").cliCep.value     = cli.cep
+                    document.querySelector("form").cliCidade.value  = cli.cidade
+                    document.querySelector("form").cliEstado.value  = cli.estado
+                    document.querySelector("form").cliObs.value     = cli.observacao
+
                 }
 
         })
     }
+
+    document.querySelector("[name=cliCep]").addEventListener('blur', (e) => {
+        if(e.target.value.length > 7){
+            requestAPI(`https://viacep.com.br/ws/${e.target.value}/json`)
+                .then(response => {
+                    if(response.status === 200){
+                        response.json()
+                            .then(j => {
+                                console.log(j)
+
+                                document.querySelector("form").cliEnd.value     = j.logradouro
+                                document.querySelector("form").cliBairro.value  = j.bairro
+                                document.querySelector("form").cliCidade.value  = j.localidade
+                                document.querySelector("form").cliEstado.value  = j.uf
+
+                                document.querySelector("[name=cliNumero]").focus()
+
+                            })
+                    }else{
+                        console.log("Erro ao fezer request")
+                    }
+                })
+        }
+    });
 
 </script>
