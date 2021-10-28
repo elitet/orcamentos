@@ -8,6 +8,9 @@
 
 let pageParam = null
 
+let orcamento = []
+orcamento.produtos = []
+
 accounting.settings = {
 	currency: {
 		symbol : "R$",   // default currency symbol is '$'
@@ -152,7 +155,7 @@ let rowOrcamentoProd = `<div class="row mb-3" id="orcamentoProd-{{id}}">
                             <p class="fs-6 fw-bolder text-center sumTotal" id="totalProd-{{id}}">R$ 0,00</p>
                         </div>
                             
-                        <hr class="mx-auto mt-2" style="width: 40rem;">
+                        <hr class="mx-auto mt-2" style="width: 95%;">
                             
                     </div>`
 
@@ -553,6 +556,9 @@ let calcTotalProd = (id) => {
     if(qtde > 0){
         totalProd = valor * qtde
     }
+
+    orcamento.produtos.filter(p => p.id == id)[0].valor         = totalProd
+    orcamento.produtos.filter(p => p.id == id)[0].quantidade    = qtde
         
     document.getElementById(`totalProd-${id}`).innerHTML = accounting.formatMoney(totalProd, "R$ ") + ` <span class="text-muted" style=" font-size: .8rem !important; ">/${unid}</span>`
     
@@ -567,10 +573,13 @@ let sumTotal = () => {
         total += accounting.unformat(e.innerText, ",")
     })
 
+    orcamento.total = total
+
     document.getElementById("totalOrcametno").innerHTML = accounting.formatMoney(total, "R$ ")
 }
 
 let removeProd = (id) => {
+    orcamento.produtos.pop(orcamento.produtos.filter(p => p.id == id)[0])
     document.getElementById(`orcamentoProd-${id}`).remove()
     sumTotal()
 }
